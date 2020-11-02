@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
+
     <Form
       :users="users"
       @add-new-user="addNewUser"
@@ -9,15 +10,27 @@
       :dob="dob"
       :password="password"
       :repassword="repassword"
+      :showModalProp="showModal"
       :editUser="editUser"
       :action="action"
+      @closeModal="closeModal"
+      :edit-index="editIndex"
+    >
+    </Form>
+
+    <Table
+      @sort-table="sortTable"
+      :users="users"
+      @remove="deleteuser"
+      @edit-item="edit"
+      :currentPage.sync="currentPage"
+      :pageSize="5"
+      @totalPagesChanged="totalPages = $event"
     />
-    <Table :users="users" @remove="deleteuser" @edit-item="edit" />
   </div>
 </template>
 
 <script>
-// import Vue from "vue"
 import Form from "./components/Form.vue";
 import Table from "./components/Table.vue";
 export default {
@@ -33,13 +46,16 @@ export default {
       dob: "",
       password: "",
       repassword: "",
+      showModal: false,
       editIndex: -1,
+      currentPage: 1,
+      totalPages: 0,
       users: [
         {
           id: 1,
           name: "Kurtis Weissnat",
           email: "km@gmail.com",
-          dob: "10/12/1996",
+          dob: "1996-05-28",
           address: "Rex Trail",
           password: "123456",
           active: false,
@@ -48,38 +64,89 @@ export default {
           id: 2,
           name: "Nicholas Reichet",
           email: "nr@gmail.com",
-          dob: "18/05/1994",
+          dob: "1994-05-14",
+          address: "Bartholomebury",
+          password: "12345678",
+          active: false,
+        },
+        {
+          id: 3,
+          name: "Raman Goyal",
+          email: "rg@gmail.com",
+          dob: "1997-05-14",
+          address: "Bartholomebury",
+          password: "12345678",
+          active: false,
+        },
+        {
+          id: 4,
+          name: "Sahil",
+          email: "sg@gmail.com",
+          dob: "1995-05-14",
+          address: "Bartholomebury",
+          password: "12345678",
+          active: false,
+        },
+        {
+          id: 5,
+          name: "Paru",
+          email: "p@gmail.com",
+          dob: "1998-05-14",
+          address: "Bartholomebury",
+          password: "12345678",
+          active: false,
+        },
+        {
+          id: 6,
+          name: "Honey",
+          email: "ha@gmail.com",
+          dob: "1999-05-14",
+          address: "Bartholomebury",
+          password: "12345678",
+          active: false,
+        },
+        {
+          id: 7,
+          name: "Manu",
+          email: "mg@gmail.com",
+          dob: "1991-05-14",
+          address: "Bartholomebury",
+          password: "12345678",
+          active: false,
+        },
+        {
+          id: 8,
+          name: "Manu1",
+          email: "mg@gmail.com",
+          dob: "1991-05-14",
           address: "Bartholomebury",
           password: "12345678",
           active: false,
         },
       ],
-      nextUserId: 3,
+      nextUserId: 9,
       editUser: {},
       action: "",
     };
   },
   methods: {
     edit(object) {
-      console.log("In edit", object);
-      console.log(object);
-      // Vue.set(this.user,this.editIndex, this.name, this.email, this.dob);
+      this.showModal = true;
       this.editUser = object;
       this.action = "edit";
-      console.log(this.editUser, ">>>>>>>>>>>>>>>>>>>");
+      this.name = this.editUser.name;
+      this.email = this.editUser.email;
+      this.dob = this.editUser.dob;
     },
     addNewUser(obj) {
-      console.log(obj,'>>>>>>>>>>>');
       if (this.action === "edit") {
-        console.log("edituser", this.editUser);
         this.users.forEach((user) => {
           if (user.id === this.editUser.id) {
-            console.log(obj.name);
             user.name = obj.name;
             user.email = obj.email;
             user.dob = obj.dob;
           }
-          this.action = ''
+          this.action = "";
         });
       } else {
         var { name, email, dob, password, repassword } = obj;
@@ -88,7 +155,8 @@ export default {
           email != "" &&
           dob != "" &&
           password != "" &&
-          repassword === password
+          repassword === password &&
+          document.getElementById("checkbox").checked
         ) {
           this.users.push({
             id: this.nextUserId++,
@@ -101,7 +169,6 @@ export default {
         } else {
           alert("Invalid Input");
         }
-
         this.name = "";
         this.email = "";
         this.dob = "";
@@ -109,30 +176,42 @@ export default {
         this.repassword = "";
       }
     },
-    handleSelect(bool, index) {
-      this.users[index].active = bool;
+    closeModal(val) {
+      this.showModal = val;
+      this.action = "";
     },
-    deleteuser(users, index, bool) {
-      this.users[index].active = bool;
-      if (bool) {
-        if (window.confirm("Do you really want to Delete?")) {
-          users.splice(index, 1);
-        }
-      } else {
-        alert("Only selected entries can be deleted");
+    deleteuser(users, user) {
+      let x = users.indexOf(user);
+      if (window.confirm("Do you really want to Delete?")) {
+        users.splice(x, 1);
       }
+    },
+    sortTable(users) {
+      users.sort(function(a, b) {
+        if (new Date(a.dob) < new Date(b.dob)) {
+          return -1;
+        }
+        if (new Date(a.dob) > new Date(b.dob)) {
+          return 1;
+        }
+        return 0;
+      });
     },
   },
 };
 </script>
 
 <style>
+body {
+  display: block;
+  margin: 0px;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 </style>

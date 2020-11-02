@@ -130,9 +130,9 @@ export default {
     };
   },
   methods: {
-    edit(object) {
+    edit(obj) {
       this.showModal = true;
-      this.editUser = object;
+      this.editUser = obj;
       this.action = "edit";
       this.name = this.editUser.name;
       this.email = this.editUser.email;
@@ -149,14 +149,15 @@ export default {
           this.action = "";
         });
       } else {
-        var { name, email, dob, password, repassword } = obj;
+        const { name, email, dob, password, repassword } = obj;
         if (
           name != "" &&
           email != "" &&
           dob != "" &&
           password != "" &&
           repassword === password &&
-          document.getElementById("checkbox").checked
+          this.$refs["checkbox"].checked
+          // document.getElementById("checkbox").checked
         ) {
           this.users.push({
             id: this.nextUserId++,
@@ -181,9 +182,9 @@ export default {
       this.action = "";
     },
     deleteuser(users, user) {
-      let x = users.indexOf(user);
+      let userToBeDeleted = users.indexOf(user);
       if (window.confirm("Do you really want to Delete?")) {
-        users.splice(x, 1);
+        users.splice(userToBeDeleted , 1);
       }
     },
     sortTable(users) {

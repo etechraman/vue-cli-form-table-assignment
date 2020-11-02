@@ -8,7 +8,12 @@
     </transition>
     <transition name="slide" appear>
       <div class="modal" v-if="showModal">
-        <form class="form" id="form" v-on:submit.prevent="addNewUser">
+        <form
+          class="form"
+          id="form"
+          ref="form"
+          v-on:submit.prevent="addNewUser"
+        >
           <fieldset>
             <legend>Candidate Info</legend>
             <input
@@ -36,7 +41,7 @@
               placeholder="Re-Enter the password *"
               v-model="repassword"
             />
-            <input type="checkbox" id="checkbox" name="field6" />
+            <input type="checkbox" id="checkbox" name="field6" ref="checkbox" />
             <label for="checkbox"
               >Tick the checkbox if you agree to terms conditions *</label
             >
@@ -55,7 +60,13 @@
 <script>
 export default {
   name: "Form",
-  props: ["users", "editUser", "action", "showModalProp", "editIndex"],
+  props: {
+    users: Array,
+    editUser: Object,
+    action: String,
+    showModalProp: Boolean,
+    editIndex: Number,
+  },
   data() {
     return {
       showModal: false,
@@ -97,7 +108,7 @@ export default {
         return alert("Enter Password");
       } else if (this.password != this.repassword) {
         return alert("Both password should match exaclty");
-      } else if (document.getElementById("checkbox").checked == false) {
+      } else if (this.$refs["checkbox"].checked == false) {
         return alert("Read and accept the terms & conditions to continue ");
       } else {
         this.$emit("add-new-user", {
@@ -125,7 +136,8 @@ export default {
       this.address = "";
       this.password = "";
       this.repassword = "";
-      document.getElementById("form").reset();
+      this.$refs["form"].reset();
+      // document.getElementById("form").reset();
     },
   },
 };

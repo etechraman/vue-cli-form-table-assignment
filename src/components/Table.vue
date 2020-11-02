@@ -48,7 +48,9 @@
 <script>
 export default {
   name: "Table",
-  props: ["users"],
+  props: {
+    users: Array,
+  },
   data() {
     return {
       activePage: 1,
